@@ -883,7 +883,9 @@ static int log_sev(int argc, char **argv)
 
 	argconfig_parse(argc, argv, desc, opts, &cfg, sizeof(cfg));
 
-    printf("op: %d, sev: %d, mod: %d\n");
+    printf("op: %d, sev: %d, mod: %d\n", cfg.isSet, cfg.sev, cfg.mod_id);
+
+    return 0;
 }
 
 static int log_dump(int argc, char **argv)
