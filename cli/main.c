@@ -852,6 +852,40 @@ static int event_wait(int argc, char **argv)
 	return 0;
 }
 
+static int log_sev(int argc, char **argv)
+{
+	const char *desc = "Get or set firmware logging severity";
+	int ret;
+
+    static struct {
+		struct switchtec_dev *dev;
+        int isSet;
+		char sev;
+		char mod_id;
+	} cfg = {
+        .isSet = 0,
+		.mod_id = 0, 
+        .sev = 0xFF
+	};
+
+	const struct argconfig_options opts[] = {
+		DEVICE_OPTION,
+        {"op", .cfg_type = CFG_BOOL, .value_addr = &cfg.isSet,
+		  .argument_type=optional_positional,
+		  .help="operation to perform: get (0) or set (1)"},
+        {"mod", .cfg_type = CFG_BYTE, .value_addr = &cfg.mod_id,
+		  .argument_type=optional_positional,
+		  .help="module id: 0 - global, or 1 to 255 for a specific FW module"},
+        {"sev", .cfg_type = CFG_BYTE, .value_addr = &cfg.sev,
+		  .argument_type=optional_positional,
+		  .help="severity level: 0 (highest) to 5 (lowest)"},
+		{NULL}};
+
+	argconfig_parse(argc, argv, desc, opts, &cfg, sizeof(cfg));
+
+    printf("op: %d, sev: %d, mod: %d\n");
+}
+
 static int log_dump(int argc, char **argv)
 {
 	const char *desc = "Dump the raw APP log to a file";
@@ -2164,6 +2198,7 @@ static const struct cmd commands[] = {
 	CMD(latency, "Measure the latency of a port"),
 	CMD(events, "Display events that have occurred"),
 	CMD(event_wait, "Wait for an event to occur"),
+	CMD(log_sev, "Get or set firmware logging severity"),
 	CMD(log_dump, "Dump firmware log to a file"),
 	CMD(test, "Test if switchtec interface is working"),
 	CMD(temp, "Return the switchtec die temperature"),
